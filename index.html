@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elemental Body Type Quiz</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:wght@700&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -17,639 +16,716 @@
   body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 2rem 1rem; }
   .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; }
   .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle 3s infinite alternate; }
-  @keyframes twinkle { from { opacity: 0.1; } to { opacity: 0.6; } }
+  @keyframes twinkle { from{opacity:.1}to{opacity:.6} }
   .card { position: relative; z-index: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 24px; width: 100%; max-width: 580px; padding: 2.5rem 2rem; box-shadow: 0 0 60px rgba(100,80,200,0.15); margin: auto; }
   .logo { text-align: center; font-family: 'Playfair Display', serif; font-size: 22px; color: var(--accent); margin-bottom: 0.25rem; letter-spacing: 1px; }
-  .logo-sub { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 2rem; letter-spacing: 2px; text-transform: uppercase; }
+  .logo-sub { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 1.5rem; letter-spacing: 2px; text-transform: uppercase; }
+  .nav-tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 1.75rem; }
+  .nav-tab { padding: 7px 18px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+  .nav-tab.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+  .screen { display: none; }
+  .screen.active { display: block; }
   .progress-wrap { margin-bottom: 2rem; }
   .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
   .progress-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #6c63ff, #a08fff); border-radius: 2px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
-  .q-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,#6c63ff,#a08fff); border-radius: 2px; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  .q-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: .75rem; }
   .q-text { font-family: 'Playfair Display', serif; font-size: 22px; line-height: 1.4; color: var(--text); margin-bottom: 1.75rem; }
   .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem; }
-  .opt { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; font-size: 14px; color: var(--text); cursor: pointer; transition: border-color 0.2s, background 0.2s; text-align: left; display: flex; align-items: center; gap: 12px; }
-  .opt-letter { width: 26px; height: 26px; border-radius: 50%; background: var(--border); color: var(--muted); font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s, color 0.2s; }
-  .opt:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.04); }
-  .opt:hover .opt-letter { background: var(--accent-dim); color: var(--accent); }
-  .opt.selected { border-color: var(--accent); background: var(--accent-dim); }
-  .opt.selected .opt-letter { background: var(--accent); color: #fff; }
-  .btn-next { width: 100%; padding: 14px; background: linear-gradient(135deg, #6c63ff, #a08fff); border: none; border-radius: var(--radius); color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: opacity 0.2s, transform 0.1s; letter-spacing: 0.5px; font-family: 'Inter', sans-serif; }
-  .btn-next:disabled { opacity: 0.3; cursor: default; }
-  .btn-next:not(:disabled):hover { opacity: 0.9; transform: translateY(-1px); }
-  .result-screen { display: none; }
-  .result-element { text-align: center; margin-bottom: 1.5rem; }
-  .element-icon { font-size: 56px; margin-bottom: 0.5rem; animation: floatIcon 3s ease-in-out infinite; display: block; }
-  @keyframes floatIcon { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-  .element-name { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; margin-bottom: 0.25rem; }
-  .element-tagline { font-size: 13px; color: var(--muted); letter-spacing: 1px; }
-  .result-desc { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; font-size: 14px; line-height: 1.7; color: var(--muted); margin-bottom: 1.25rem; }
-  .traits { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
-  .trait { padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: var(--surface2); }
-  .bar-section { margin-bottom: 1.75rem; }
-  .bar-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 1rem; }
-  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .bar-lbl { font-size: 13px; color: var(--muted); width: 80px; flex-shrink: 0; }
-  .bar-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; }
-  .bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
-  .bar-val { font-size: 12px; color: var(--muted); width: 20px; text-align: right; }
-  .secondary-section { margin-bottom: 1.75rem; }
-  .secondary-title { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 0.75rem; }
-  .secondary-badges { display: flex; gap: 8px; flex-wrap: wrap; }
-  .sec-badge { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); font-size: 13px; color: var(--muted); }
-  .guide-section { margin-bottom: 1.75rem; }
-  .guide-heading { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 1rem; }
-  .tab-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.25rem; }
-  .tab-btn { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; }
-  .tab-btn:hover { border-color: var(--border-hover); color: var(--text); }
-  .tab-btn.active { color: #fff; border-color: transparent; }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-  .guide-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-bottom: 10px; }
-  .guide-card-title { font-size: 13px; font-weight: 600; margin-bottom: 0.6rem; }
-  .guide-list { list-style: none; padding: 0; }
-  .guide-list li { font-size: 13px; color: var(--muted); line-height: 1.7; padding: 4px 0 4px 16px; position: relative; }
-  .guide-list li::before { content: '·'; position: absolute; left: 4px; color: var(--accent); }
-  .balance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .balance-box { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; }
-  .balance-box-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
-  .affirmation-list { list-style: none; padding: 0; }
-  .affirmation-list li { font-size: 13px; color: var(--muted); font-style: italic; line-height: 1.8; padding: 5px 0; border-bottom: 1px solid var(--border); }
-  .affirmation-list li:last-child { border-bottom: none; }
-  .affirmation-list li::before { content: '"'; color: var(--accent); margin-right: 4px; }
-
-  /* Save section */
-  .save-section { margin-bottom: 1.75rem; }
-  .save-heading { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin-bottom: 1rem; }
-  .save-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .save-btn { padding: 13px 10px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 13px; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; gap: 6px; }
-  .save-btn:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.05); }
-  .save-btn .save-ico { font-size: 22px; }
-  .save-btn .save-lbl { font-size: 12px; color: var(--muted); }
-
-  /* Copy popup */
-  .copy-popup { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: #1e1a35; border: 1px solid rgba(160,143,255,0.4); border-radius: 999px; padding: 10px 22px; font-size: 13px; color: #a08fff; z-index: 999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
-  .copy-popup.show { opacity: 1; }
-
-  /* Shareable result card (hidden, used for image capture) */
-  #share-card {
-    position: fixed; top: -9999px; left: -9999px;
-    width: 480px; background: #0e0c1a;
-    border-radius: 24px; padding: 2.5rem 2rem;
-    font-family: 'Inter', sans-serif; color: #f0eeff;
-    border: 1px solid rgba(255,255,255,0.08);
-  }
-  #share-card .sc-logo { text-align: center; font-size: 13px; color: #9b97b8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 1.5rem; }
-  #share-card .sc-icon { text-align: center; font-size: 64px; margin-bottom: 0.5rem; }
-  #share-card .sc-name { text-align: center; font-size: 36px; font-weight: 700; margin-bottom: 0.25rem; }
-  #share-card .sc-tagline { text-align: center; font-size: 13px; color: #9b97b8; margin-bottom: 1.5rem; }
-  #share-card .sc-desc { background: #1e1a35; border-radius: 14px; padding: 1rem; font-size: 13px; line-height: 1.7; color: #9b97b8; margin-bottom: 1.25rem; }
-  #share-card .sc-traits { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 1.5rem; }
-  #share-card .sc-trait { padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 500; border: 1px solid rgba(255,255,255,0.15); }
-  #share-card .sc-affirmation { text-align: center; font-size: 15px; font-style: italic; color: #a08fff; margin-bottom: 1.5rem; padding: 0 1rem; line-height: 1.6; }
-  #share-card .sc-footer { text-align: center; font-size: 11px; color: #9b97b8; letter-spacing: 1px; margin-top: 1rem; }
-  #share-card .sc-bars { margin-bottom: 1.25rem; }
-  #share-card .sc-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-  #share-card .sc-bar-lbl { font-size: 12px; color: #9b97b8; width: 75px; flex-shrink: 0; }
-  #share-card .sc-bar-track { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; }
-  #share-card .sc-bar-fill { height: 100%; border-radius: 3px; }
-  #share-card .sc-bar-val { font-size: 11px; color: #9b97b8; width: 18px; text-align: right; }
-
-  .result-actions { display: flex; gap: 10px; margin-top: 1.75rem; }
-  .btn-retake { flex: 1; padding: 13px; background: transparent; border: 1px solid var(--border); border-radius: var(--radius); color: var(--muted); font-size: 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s; font-family: 'Inter', sans-serif; }
-  .btn-retake:hover { border-color: var(--border-hover); color: var(--text); }
-  .btn-new { flex: 1; padding: 13px; background: var(--accent-dim); border: 1px solid var(--accent); border-radius: var(--radius); color: var(--accent); font-size: 14px; cursor: pointer; transition: background 0.2s; font-family: 'Inter', sans-serif; }
-  .btn-new:hover { background: rgba(160,143,255,0.25); }
-  .hidden { display: none !important; }
-  @media (max-width: 480px) {
-    .card { padding: 1.75rem 1.25rem; }
-    .q-text { font-size: 19px; }
-    .element-name { font-size: 26px; }
-    .balance-grid { grid-template-columns: 1fr; }
-    .save-btns { grid-template-columns: 1fr 1fr; }
-  }
+  .opt { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; font-size: 14px; color: var(--text); cursor: pointer; transition: border-color .2s,background .2s; text-align: left; display: flex; align-items: center; gap: 12px; font-family:'Inter',sans-serif; }
+  .opt-letter { width:26px;height:26px;border-radius:50%;background:var(--border);color:var(--muted);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,color .2s; }
+  .opt:hover { border-color:var(--border-hover);background:rgba(255,255,255,.04); }
+  .opt:hover .opt-letter { background:var(--accent-dim);color:var(--accent); }
+  .opt.selected { border-color:var(--accent);background:var(--accent-dim); }
+  .opt.selected .opt-letter { background:var(--accent);color:#fff; }
+  .btn-next { width:100%;padding:14px;background:linear-gradient(135deg,#6c63ff,#a08fff);border:none;border-radius:var(--radius);color:#fff;font-size:15px;font-weight:500;cursor:pointer;transition:opacity .2s,transform .1s;letter-spacing:.5px;font-family:'Inter',sans-serif; }
+  .btn-next:disabled { opacity:.3;cursor:default; }
+  .btn-next:not(:disabled):hover { opacity:.9;transform:translateY(-1px); }
+  .name-screen { text-align: center; padding: 1rem 0; }
+  .name-title { font-family:'Playfair Display',serif; font-size:22px; margin-bottom:.5rem; }
+  .name-sub { font-size:13px; color:var(--muted); margin-bottom:1.5rem; line-height:1.6; }
+  .name-input { width:100%;padding:13px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;margin-bottom:.75rem; }
+  .name-input:focus { border-color:var(--accent); }
+  .phone-hint { font-size:11px;color:var(--muted);margin-bottom:1rem;text-align:left; }
+  .result-element { text-align:center;margin-bottom:1.5rem; }
+  .element-icon { font-size:56px;margin-bottom:.5rem;animation:floatIcon 3s ease-in-out infinite;display:block; }
+  @keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .element-name { font-family:'Playfair Display',serif;font-size:32px;font-weight:700;margin-bottom:.25rem; }
+  .element-tagline { font-size:13px;color:var(--muted);letter-spacing:1px; }
+  .result-desc { background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;font-size:14px;line-height:1.7;color:var(--muted);margin-bottom:1.25rem; }
+  .traits { display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem; }
+  .trait { padding:5px 14px;border-radius:999px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--surface2); }
+  .bar-section { margin-bottom:1.75rem; }
+  .bar-title { font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:1rem; }
+  .bar-row { display:flex;align-items:center;gap:10px;margin-bottom:10px; }
+  .bar-lbl { font-size:13px;color:var(--muted);width:80px;flex-shrink:0; }
+  .bar-track { flex:1;height:5px;background:var(--border);border-radius:3px; }
+  .bar-fill { height:100%;border-radius:3px;transition:width .8s ease; }
+  .bar-val { font-size:12px;color:var(--muted);width:20px;text-align:right; }
+  .secondary-section { margin-bottom:1.75rem; }
+  .secondary-title { font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:.75rem; }
+  .secondary-badges { display:flex;gap:8px;flex-wrap:wrap; }
+  .sec-badge { padding:6px 14px;border-radius:999px;border:1px solid var(--border);font-size:13px;color:var(--muted); }
+  .guide-section { margin-bottom:1.75rem; }
+  .guide-heading { font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:1rem; }
+  .tab-row { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.25rem; }
+  .tab-btn { padding:7px 14px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif; }
+  .tab-btn.active { color:#fff;border-color:transparent; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+  .guide-card { background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;margin-bottom:10px; }
+  .guide-card-title { font-size:13px;font-weight:600;margin-bottom:.6rem; }
+  .guide-list { list-style:none;padding:0; }
+  .guide-list li { font-size:13px;color:var(--muted);line-height:1.7;padding:4px 0 4px 16px;position:relative; }
+  .guide-list li::before { content:'·';position:absolute;left:4px;color:var(--accent); }
+  .balance-grid { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+  .balance-box { background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem; }
+  .balance-box-title { font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem; }
+  .affirmation-list { list-style:none;padding:0; }
+  .affirmation-list li { font-size:13px;color:var(--muted);font-style:italic;line-height:1.8;padding:5px 0;border-bottom:1px solid var(--border); }
+  .affirmation-list li:last-child { border-bottom:none; }
+  .affirmation-list li::before { content:'"';color:var(--accent);margin-right:4px; }
+  .share-section { margin-bottom:1.75rem; }
+  .share-heading { font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:1rem; }
+  .share-btns { display:flex;gap:10px;flex-wrap:wrap; }
+  .btn-share { flex:1;min-width:120px;padding:12px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:border-color .2s;display:flex;align-items:center;justify-content:center;gap:6px; }
+  .btn-share:hover { border-color:var(--border-hover); }
+  .btn-wa { flex:1;min-width:120px;padding:12px 14px;border-radius:var(--radius);border:none;background:#25D366;color:#fff;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .2s; }
+  .btn-wa:hover { opacity:.88; }
+  .result-actions { display:flex;gap:10px;margin-top:1.75rem; }
+  .btn-retake { flex:1;padding:13px;background:transparent;border:1px solid var(--border);border-radius:var(--radius);color:var(--muted);font-size:14px;cursor:pointer;font-family:'Inter',sans-serif; }
+  .btn-retake:hover { border-color:var(--border-hover);color:var(--text); }
+  .btn-new { flex:1;padding:13px;background:var(--accent-dim);border:1px solid var(--accent);border-radius:var(--radius);color:var(--accent);font-size:14px;cursor:pointer;font-family:'Inter',sans-serif; }
+  /* Saved */
+  .saved-empty { text-align:center;padding:3rem 1rem;color:var(--muted);font-size:14px; }
+  .saved-empty-icon { font-size:40px;margin-bottom:.75rem; }
+  .stats-row { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.5rem; }
+  .stat-box { background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center; }
+  .stat-num { font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:4px; }
+  .stat-lbl { font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px; }
+  .saved-entry { background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px; }
+  .saved-entry-icon { font-size:28px;flex-shrink:0; }
+  .saved-entry-info { flex:1;min-width:0; }
+  .saved-entry-name { font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px; }
+  .saved-entry-element { font-size:12px;margin-bottom:2px; }
+  .saved-entry-date { font-size:11px;color:var(--muted); }
+  .saved-entry-traits { display:flex;flex-wrap:wrap;gap:4px;margin-top:6px; }
+  .saved-entry-trait { padding:2px 8px;border-radius:999px;font-size:10px;border:1px solid var(--border); }
+  /* Setup banner */
+  .setup-banner { background:linear-gradient(135deg,#1a1535,#0e1a2e); border:1px solid rgba(255,200,50,.25); border-radius:var(--radius); padding:1.25rem; margin-bottom:1.5rem; }
+  .setup-banner-title { font-size:13px;font-weight:600;color:#f5c842;margin-bottom:.5rem;display:flex;align-items:center;gap:6px; }
+  .setup-banner-text { font-size:12px;color:var(--muted);line-height:1.7; }
+  .setup-banner code { background:rgba(255,255,255,.08);padding:2px 6px;border-radius:4px;font-size:11px;color:#a08fff;font-family:monospace; }
+  .setup-input-row { display:flex;gap:8px;margin-top:1rem; }
+  .setup-url-input { flex:1;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:12px;font-family:'Inter',sans-serif;outline:none; }
+  .setup-url-input:focus { border-color:var(--accent); }
+  .setup-save-btn { padding:10px 16px;background:var(--accent);border:none;border-radius:var(--radius);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap; }
+  .setup-save-btn:hover { opacity:.88; }
+  .status-dot { width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px; }
+  .saved-clear-btn { width:100%;padding:11px;background:transparent;border:1px solid rgba(255,80,80,.3);border-radius:var(--radius);color:rgba(255,100,100,.7);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:1rem; }
+  .saved-clear-btn:hover { border-color:rgba(255,80,80,.6);color:rgba(255,100,100,1); }
+  .sheet-status { font-size:12px;color:var(--muted);margin-top:.5rem;min-height:18px; }
+  .sheet-status.ok { color:#7bc67e; }
+  .sheet-status.err { color:#ff6b6b; }
+  .toast { position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#16132a;border:1px solid var(--border);color:var(--text);padding:10px 22px;border-radius:999px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap; }
+  .toast.show { opacity:1; }
+  .hidden { display:none!important; }
+  @media(max-width:480px){.card{padding:1.75rem 1.25rem}.q-text{font-size:19px}.element-name{font-size:26px}.balance-grid{grid-template-columns:1fr}.share-btns{flex-direction:column}.stats-row{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <div class="stars" id="stars"></div>
-
-<!-- Hidden share card for image export -->
-<div id="share-card">
-  <div class="sc-logo">✦ Elemental Self — Body Energy Quiz</div>
-  <div class="sc-icon" id="sc-icon"></div>
-  <div class="sc-name" id="sc-name"></div>
-  <div class="sc-tagline" id="sc-tagline"></div>
-  <div class="sc-desc" id="sc-desc"></div>
-  <div class="sc-traits" id="sc-traits"></div>
-  <div class="sc-bars" id="sc-bars"></div>
-  <div class="sc-affirmation" id="sc-affirmation"></div>
-  <div class="sc-footer">✦ Elemental Self Quiz &nbsp;·&nbsp; Discover your body energy type</div>
-</div>
-
+<div class="toast" id="toast"></div>
 <div class="card">
   <div class="logo">✦ Elemental Self</div>
   <div class="logo-sub">Body Energy Type Quiz</div>
-
-  <!-- Quiz Screen -->
-  <div id="quiz-screen">
-    <div class="progress-wrap">
-      <div class="progress-meta"><span id="q-counter">Question 1 of 10</span><span id="q-pct">0%</span></div>
-      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
-    </div>
-    <div class="q-label" id="q-label">Element Reading</div>
-    <div class="q-text" id="q-text"></div>
-    <div class="options" id="options"></div>
-    <button class="btn-next" id="btn-next" disabled>Continue →</button>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchNav('quiz')">🔮 Quiz</button>
+    <button class="nav-tab" onclick="switchNav('saved')">📋 Results</button>
+    <button class="nav-tab" onclick="switchNav('setup')">⚙️ Setup</button>
   </div>
 
-  <!-- Result Screen -->
-  <div id="result-screen" class="result-screen hidden">
-    <div class="result-element">
-      <span class="element-icon" id="res-icon"></span>
-      <div class="element-name" id="res-name"></div>
-      <div class="element-tagline" id="res-tagline"></div>
+  <!-- Quiz Screen -->
+  <div id="screen-quiz" class="screen active">
+    <div id="step-questions">
+      <div class="progress-wrap">
+        <div class="progress-meta"><span id="q-counter">Question 1 of 10</span><span id="q-pct">0%</span></div>
+        <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+      </div>
+      <div class="q-label" id="q-label">Element Reading</div>
+      <div class="q-text" id="q-text"></div>
+      <div class="options" id="options"></div>
+      <button class="btn-next" id="btn-next" disabled>Continue →</button>
     </div>
-    <div class="result-desc" id="res-desc"></div>
-    <div class="traits" id="res-traits"></div>
-    <div class="secondary-section">
-      <div class="secondary-title">Secondary influences</div>
-      <div class="secondary-badges" id="res-secondary"></div>
+    <div id="step-name" class="hidden name-screen">
+      <div style="font-size:48px;margin-bottom:.75rem">✨</div>
+      <div class="name-title">Almost there!</div>
+      <div class="name-sub">Enter your details to save your result to Google Sheets and see your element!</div>
+      <input class="name-input" id="name-input" type="text" placeholder="Your name..." maxlength="40"/>
+      <input class="name-input" id="phone-input" type="tel" placeholder="WhatsApp number (optional)" maxlength="15" style="margin-top:0"/>
+      <p class="phone-hint">📱 Optional — so we can share personalised tips with you</p>
+      <button class="btn-next" id="btn-save-result">See My Element →</button>
+      <div class="sheet-status" id="submit-status"></div>
     </div>
-    <div class="bar-section">
-      <div class="bar-title">Your elemental breakdown</div>
-      <div id="res-bars"></div>
-    </div>
-    <div class="guide-section">
-      <div class="guide-heading">✦ Activate &amp; Balance Your Energy</div>
-      <div class="tab-row" id="guide-tabs"></div>
-      <div id="guide-panels"></div>
-    </div>
-
-    <!-- Save & Share -->
-    <div class="save-section">
-      <div class="save-heading">✦ Save &amp; Share Your Result</div>
-      <div class="save-btns">
-        <button class="save-btn" id="btn-save-img">
-          <span class="save-ico">🖼️</span>
-          <span style="font-size:13px;font-weight:500">Save as Image</span>
-          <span class="save-lbl">Download PNG</span>
-        </button>
-        <button class="save-btn" id="btn-copy-wa">
-          <span class="save-ico">💬</span>
-          <span style="font-size:13px;font-weight:500">Copy for WhatsApp</span>
-          <span class="save-lbl">Ready to paste</span>
-        </button>
-        <button class="save-btn" id="btn-copy-text">
-          <span class="save-ico">📋</span>
-          <span style="font-size:13px;font-weight:500">Copy Full Result</span>
-          <span class="save-lbl">All details</span>
-        </button>
-        <button class="save-btn" id="btn-save-pdf">
-          <span class="save-ico">📄</span>
-          <span style="font-size:13px;font-weight:500">Print / Save PDF</span>
-          <span class="save-lbl">Via browser</span>
-        </button>
+    <div id="step-result" class="hidden">
+      <div class="result-element">
+        <span class="element-icon" id="res-icon"></span>
+        <div class="element-name" id="res-name"></div>
+        <div class="element-tagline" id="res-tagline"></div>
+      </div>
+      <div class="result-desc" id="res-desc"></div>
+      <div class="traits" id="res-traits"></div>
+      <div class="secondary-section">
+        <div class="secondary-title">Secondary influences</div>
+        <div class="secondary-badges" id="res-secondary"></div>
+      </div>
+      <div class="bar-section">
+        <div class="bar-title">Your elemental breakdown</div>
+        <div id="res-bars"></div>
+      </div>
+      <div class="guide-section">
+        <div class="guide-heading">✦ Activate &amp; Balance Your Energy</div>
+        <div class="tab-row" id="guide-tabs"></div>
+        <div id="guide-panels"></div>
+      </div>
+      <div class="share-section">
+        <div class="share-heading">✦ Share Your Result</div>
+        <div class="share-btns">
+          <button class="btn-share" onclick="copyText()">📋 Copy Text</button>
+          <button class="btn-wa" onclick="shareWhatsApp()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.025.507 3.934 1.4 5.608L0 24l6.604-1.376A11.942 11.942 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.003-1.368l-.36-.214-3.714.774.789-3.624-.235-.372A9.808 9.808 0 012.182 12C2.182 6.58 6.58 2.182 12 2.182S21.818 6.58 21.818 12 17.42 21.818 12 21.818z"/></svg>
+            Share on WhatsApp
+          </button>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="btn-retake" onclick="resetQuiz()">↺ Retake</button>
+        <button class="btn-new" onclick="resetQuiz()">New person →</button>
       </div>
     </div>
+  </div>
 
-    <div class="result-actions">
-      <button class="btn-retake" id="btn-retake">↺ Retake</button>
-      <button class="btn-new" id="btn-new">New person →</button>
+  <!-- Results Screen -->
+  <div id="screen-saved" class="screen">
+    <div id="stats-row" class="stats-row hidden"></div>
+    <div id="saved-list"></div>
+  </div>
+
+  <!-- Setup Screen -->
+  <div id="screen-setup" class="screen">
+    <div class="setup-banner">
+      <div class="setup-banner-title">⚡ Connect Google Sheets</div>
+      <div class="setup-banner-text">
+        Every quiz result (name, WhatsApp, element, date) will be automatically saved to your Google Sheet.<br><br>
+        <strong style="color:var(--text)">Steps to set up:</strong><br><br>
+        1. Open <strong style="color:#a08fff">Google Sheets</strong> → create a new sheet<br>
+        2. Click <strong style="color:#a08fff">Extensions → Apps Script</strong><br>
+        3. Delete existing code and paste the script below<br>
+        4. Click <strong style="color:#a08fff">Deploy → New deployment → Web App</strong><br>
+        5. Set <strong style="color:#a08fff">"Who has access" → Anyone</strong><br>
+        6. Copy the Web App URL and paste it below<br><br>
+        <strong style="color:var(--text)">Apps Script code to paste:</strong><br><br>
+        <code id="script-code">Loading...</code>
+      </div>
+      <div class="setup-input-row">
+        <input class="setup-url-input" id="sheet-url-input" type="url" placeholder="Paste your Apps Script Web App URL here..."/>
+        <button class="setup-save-btn" onclick="saveSheetUrl()">Save</button>
+      </div>
+      <div class="sheet-status" id="sheet-status-msg"></div>
+    </div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:.75rem;color:var(--text)">📋 Your Google Sheet will have these columns:</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+        <div style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:8px;">📅 Timestamp</div>
+        <div style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:8px;">👤 Name</div>
+        <div style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:8px;">📱 WhatsApp</div>
+        <div style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:8px;">🌟 Primary Element</div>
+        <div style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:8px;">✦ Secondary 1</div>
+        <div style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:8px;">✦ Secondary 2</div>
+        <div style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:8px;">📊 All Scores</div>
+        <div style="font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface);border-radius:8px;">🔗 Source URL</div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="copy-popup" id="copy-popup">✓ Copied to clipboard!</div>
-
 <script>
+// ── Apps Script code shown in setup ──────────────────────────────────────────
+const APPS_SCRIPT_CODE = `function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+
+  // Add headers if sheet is empty
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      'Timestamp','Name','WhatsApp',
+      'Primary Element','Secondary 1','Secondary 2',
+      'Scores (JSON)','Source URL'
+    ]);
+    sheet.getRange(1,1,1,8).setFontWeight('bold')
+      .setBackground('#6c63ff').setFontColor('#ffffff');
+    sheet.setFrozenRows(1);
+  }
+
+  sheet.appendRow([
+    new Date().toLocaleString(),
+    data.name || '',
+    data.phone || '',
+    data.element || '',
+    data.secondary1 || '',
+    data.secondary2 || '',
+    JSON.stringify(data.scores || {}),
+    data.url || ''
+  ]);
+
+  return ContentService
+    .createTextOutput(JSON.stringify({status:'ok'}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doGet(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var rows = sheet.getDataRange().getValues();
+  var headers = rows[0];
+  var results = rows.slice(1).map(function(row) {
+    var obj = {};
+    headers.forEach(function(h,i){ obj[h] = row[i]; });
+    return obj;
+  });
+  return ContentService
+    .createTextOutput(JSON.stringify({status:'ok', data: results}))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+document.getElementById('script-code').textContent = APPS_SCRIPT_CODE;
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+const LS_KEY   = 'elemental_results_v1';
+const URL_KEY  = 'elemental_sheet_url';
+
+function getSheetUrl() { return localStorage.getItem(URL_KEY) || ''; }
+function setSheetUrl(u) { localStorage.setItem(URL_KEY, u); }
+function loadLocal() { try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; } catch { return []; } }
+function saveLocal(arr) { try { localStorage.setItem(LS_KEY, JSON.stringify(arr.slice(0,200))); } catch{} }
+
+// pre-fill setup input
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = getSheetUrl();
+  if (saved) {
+    document.getElementById('sheet-url-input').value = saved;
+    document.getElementById('sheet-status-msg').textContent = '✅ Google Sheet connected';
+    document.getElementById('sheet-status-msg').className = 'sheet-status ok';
+  }
+});
+
+// ── Questions & Elements ─────────────────────────────────────────────────────
 const questions = [
-  { text:"How does your body usually feel?", label:"Body Temperature", options:[
-    { text:"Warm or hot most of the time", e:{fire:3,thunder:1} },
-    { text:"Cool or cold, especially hands/feet", e:{water:2,ice:2} },
-    { text:"Heavy, solid and grounded", e:{earth:3} },
-    { text:"Light and variable, hard to pin down", e:{wind:2,wood:1} }]},
-  { text:"How do you naturally handle stress?", label:"Stress Response", options:[
-    { text:"I explode — get angry or react fast", e:{fire:3,thunder:1} },
-    { text:"I withdraw and go quiet inside", e:{water:2,ice:2} },
-    { text:"I worry and overthink for a long time", e:{earth:1,wind:2} },
-    { text:"I stay calm and adjust to the situation", e:{earth:2,wood:1} }]},
-  { text:"Which best describes your personality?", label:"Core Nature", options:[
-    { text:"Passionate, driven and competitive", e:{fire:3} },
-    { text:"Intuitive, deep and emotionally wise", e:{water:3} },
-    { text:"Nurturing, reliable and patient", e:{earth:3} },
-    { text:"Creative, free-spirited and spontaneous", e:{wind:3} }]},
-  { text:"Which season resonates most with you?", label:"Seasonal Affinity", options:[
-    { text:"Summer — hot, vibrant, full of energy", e:{fire:3} },
-    { text:"Winter — quiet, still, introspective", e:{water:2,ice:2} },
-    { text:"Spring — fresh, growing, ambitious", e:{wood:3} },
-    { text:"Autumn — breezy, changing, reflective", e:{wind:2,earth:1} }]},
-  { text:"How would you describe your thinking?", label:"Mental Style", options:[
-    { text:"Fast and sharp — breakthrough ideas", e:{thunder:3,fire:1} },
-    { text:"Methodical and long-term visionary", e:{wood:3} },
-    { text:"Precise, logical and emotionally cool", e:{ice:3} },
-    { text:"Imaginative but scattered, many ideas", e:{wind:3} }]},
-  { text:"How is your daily energy level?", label:"Energy Pattern", options:[
-    { text:"Intense bursts — I go hard then crash", e:{fire:2,thunder:2} },
-    { text:"Slow and steady, consistent all day", e:{earth:3} },
-    { text:"Flows like waves — up and then down", e:{water:3} },
-    { text:"Unpredictable, changes without warning", e:{wind:2,thunder:1} }]},
-  { text:"Which emotion feels most familiar to you?", label:"Dominant Emotion", options:[
-    { text:"Anger, passion or strong desire", e:{fire:3,wood:1} },
-    { text:"Fear, awe or deep inner wisdom", e:{water:3} },
-    { text:"Worry, care and concern for others", e:{earth:3} },
-    { text:"Joy, wonder and restless excitement", e:{wind:2,thunder:1} }]},
-  { text:"How do you prefer to spend free time?", label:"Rest Style", options:[
-    { text:"Active — sports, building or creating", e:{fire:2,wood:1} },
-    { text:"Alone — near water, silence or nature", e:{water:2,ice:1} },
-    { text:"With loved ones, cooking, cozy spaces", e:{earth:3} },
-    { text:"Exploring, traveling or daydreaming", e:{wind:3} }]},
-  { text:"How do others usually see you?", label:"Social Energy", options:[
-    { text:"Bold and magnetic — I stand out", e:{fire:2,thunder:2} },
-    { text:"Mysterious and hard to fully know", e:{water:2,ice:2} },
-    { text:"Warm and dependable — the safe one", e:{earth:3} },
-    { text:"Breezy and fun — always moving on", e:{wind:3} }]},
-  { text:"When making decisions you tend to…", label:"Decision Making", options:[
-    { text:"Act fast on instinct and gut feeling", e:{fire:2,thunder:2} },
-    { text:"Feel it out deeply before deciding", e:{water:3} },
-    { text:"Weigh every option carefully and slowly", e:{earth:2,ice:1} },
-    { text:"Go with the flow, decide in the moment", e:{wind:3} }]},
+  {text:"How does your body usually feel?",label:"Body Temperature",options:[
+    {text:"Warm or hot most of the time",e:{fire:3,thunder:1}},
+    {text:"Cool or cold, especially hands/feet",e:{water:2,ice:2}},
+    {text:"Heavy, solid and grounded",e:{earth:3}},
+    {text:"Light and variable, hard to pin down",e:{wind:2,wood:1}}]},
+  {text:"How do you naturally handle stress?",label:"Stress Response",options:[
+    {text:"I explode — get angry or react fast",e:{fire:3,thunder:1}},
+    {text:"I withdraw and go quiet inside",e:{water:2,ice:2}},
+    {text:"I worry and overthink for a long time",e:{earth:1,wind:2}},
+    {text:"I stay calm and adjust to the situation",e:{earth:2,wood:1}}]},
+  {text:"Which best describes your personality?",label:"Core Nature",options:[
+    {text:"Passionate, driven and competitive",e:{fire:3}},
+    {text:"Intuitive, deep and emotionally wise",e:{water:3}},
+    {text:"Nurturing, reliable and patient",e:{earth:3}},
+    {text:"Creative, free-spirited and spontaneous",e:{wind:3}}]},
+  {text:"Which season resonates most with you?",label:"Seasonal Affinity",options:[
+    {text:"Summer — hot, vibrant, full of energy",e:{fire:3}},
+    {text:"Winter — quiet, still, introspective",e:{water:2,ice:2}},
+    {text:"Spring — fresh, growing, ambitious",e:{wood:3}},
+    {text:"Autumn — breezy, changing, reflective",e:{wind:2,earth:1}}]},
+  {text:"How would you describe your thinking?",label:"Mental Style",options:[
+    {text:"Fast and sharp — breakthrough ideas",e:{thunder:3,fire:1}},
+    {text:"Methodical and long-term visionary",e:{wood:3}},
+    {text:"Precise, logical and emotionally cool",e:{ice:3}},
+    {text:"Imaginative but scattered, many ideas",e:{wind:3}}]},
+  {text:"How is your daily energy level?",label:"Energy Pattern",options:[
+    {text:"Intense bursts — I go hard then crash",e:{fire:2,thunder:2}},
+    {text:"Slow and steady, consistent all day",e:{earth:3}},
+    {text:"Flows like waves — up and then down",e:{water:3}},
+    {text:"Unpredictable, changes without warning",e:{wind:2,thunder:1}}]},
+  {text:"Which emotion feels most familiar to you?",label:"Dominant Emotion",options:[
+    {text:"Anger, passion or strong desire",e:{fire:3,wood:1}},
+    {text:"Fear, awe or deep inner wisdom",e:{water:3}},
+    {text:"Worry, care and concern for others",e:{earth:3}},
+    {text:"Joy, wonder and restless excitement",e:{wind:2,thunder:1}}]},
+  {text:"How do you prefer to spend free time?",label:"Rest Style",options:[
+    {text:"Active — sports, building or creating",e:{fire:2,wood:1}},
+    {text:"Alone — near water, silence or nature",e:{water:2,ice:1}},
+    {text:"With loved ones, cooking, cozy spaces",e:{earth:3}},
+    {text:"Exploring, traveling or daydreaming",e:{wind:3}}]},
+  {text:"How do others usually see you?",label:"Social Energy",options:[
+    {text:"Bold and magnetic — I stand out",e:{fire:2,thunder:2}},
+    {text:"Mysterious and hard to fully know",e:{water:2,ice:2}},
+    {text:"Warm and dependable — the safe one",e:{earth:3}},
+    {text:"Breezy and fun — always moving on",e:{wind:3}}]},
+  {text:"When making decisions you tend to…",label:"Decision Making",options:[
+    {text:"Act fast on instinct and gut feeling",e:{fire:2,thunder:2}},
+    {text:"Feel it out deeply before deciding",e:{water:3}},
+    {text:"Weigh every option carefully and slowly",e:{earth:2,ice:1}},
+    {text:"Go with the flow, decide in the moment",e:{wind:3}}]},
 ];
 
 const elements = {
-  fire:{ icon:"🔥", name:"Fire", tagline:"The Flame Within", color:"#ff6b35",
-    desc:"You burn with passion, intensity and unstoppable drive. Your energy commands attention in every room. Your challenge is learning to rest before the flame consumes you — true power knows when to dim.",
-    traits:["Passionate","Driven","Magnetic","Intense","Fearless"], barColor:"#ff6b35",
-    guide:{
-      morning:["Drink cool water before rising — balance the inner heat","5 min meditation before checking phone — direct the fire intentionally","Set one bold intention for the day — fire needs purpose"],
-      movement:["High-intensity workouts, martial arts or competitive sports","Channel aggression into creation — dance, forge, build something","Rest days are sacred — fire burns out without them"],
-      food:["Cool, bitter foods — leafy greens, cucumber, mint tea","Avoid excessive spice or caffeine — it overheats your system","Dark chocolate, pomegranate and berries balance fire energy"],
+  fire:{icon:"🔥",name:"Fire",tagline:"The Flame Within",color:"#ff6b35",
+    desc:"You burn with passion, intensity and unstoppable drive. Your energy commands attention in every room. Your challenge is learning to rest before the flame consumes you.",
+    traits:["Passionate","Driven","Magnetic","Intense","Fearless"],barColor:"#ff6b35",
+    guide:{morning:["Drink cool water before rising — balance the inner heat","5 min meditation before phone — direct the fire intentionally","Set one bold intention for the day"],
+      movement:["High-intensity workouts, martial arts or competitive sports","Channel aggression into creation — dance, forge, build","Rest days are sacred — fire burns out without them"],
+      food:["Cool, bitter foods — leafy greens, cucumber, mint tea","Avoid excess spice or caffeine","Dark chocolate, pomegranate and berries balance fire"],
       blocked:["Restless without cause","Creative blocks or apathy","Chest tightness or low motivation"],
       excess:["Bursting into anger quickly","Insomnia or racing thoughts","Skin inflammation or heartburn"],
-      fix_blocked:["Do 10 jumping jacks to spark your energy","Spend 5 min in direct sunlight","Write down one thing you deeply desire"],
-      fix_excess:["Cold shower or splash face with cold water","Deep slow breathing — 4 counts in, 8 counts out","Walk barefoot on grass to discharge excess heat"],
-      affirmations:["I burn bright without burning out","My passion creates, not destroys","I rest so I can rise again stronger"]
-    }
-  },
-  water:{ icon:"💧", name:"Water", tagline:"The Deep Current", color:"#4da6ff",
-    desc:"You flow with deep intuition and emotional intelligence. Your inner world is vast like an ocean — few can fully explore it. Your strength is feeling everything deeply; your challenge is not drowning in it.",
-    traits:["Intuitive","Empathic","Mysterious","Adaptive","Wise"], barColor:"#4da6ff",
-    guide:{
-      morning:["Drink a full glass of water the moment you wake up","5 min moon journaling — write dreams, feelings, gut instincts","Sit in silence before the world wakes — you need stillness to access intuition"],
-      movement:["Swimming is your most powerful practice — do it weekly","Slow yoga or Yin yoga — releases stored emotions from hips","Walk near any water source — river, lake, rain, fountain"],
-      food:["Dark foods — black beans, seaweed, blueberries, walnuts","Warm soups and broths — water types run cold, avoid raw cold food","Kidney-support teas — ginger, nettle, black sesame"],
-      blocked:["Fear, anxiety without clear cause","Low motivation, emotional numbness","Lower back or knee discomfort"],
-      excess:["Crying without knowing why","Absorbing others' emotions as your own","Over-isolation or emotional overwhelm"],
-      fix_blocked:["Face one small fear today — even tiny courage activates water","Rub your lower back in warm circles (kidney meridian massage)","Listen to ambient water sounds for 10 minutes"],
-      fix_excess:["Ground yourself — walk barefoot on earth","Set one clear emotional boundary today","Spend time with earth-element people — they stabilize you"],
-      affirmations:["I flow with life, not against it","My intuition always guides me","I feel deeply and I am not afraid of my depth"]
-    }
-  },
-  earth:{ icon:"🌍", name:"Earth", tagline:"The Grounded Force", color:"#7bc67e",
+      fix_blocked:["Do 10 jumping jacks to spark energy","Spend 5 min in direct sunlight","Write down one thing you deeply desire"],
+      fix_excess:["Cold shower or splash face with cold water","Deep slow breathing — 4 in, 8 out","Walk barefoot on grass to discharge heat"],
+      affirmations:["I burn bright without burning out","My passion creates, not destroys","I rest so I can rise again stronger"]}},
+  water:{icon:"💧",name:"Water",tagline:"The Deep Current",color:"#4da6ff",
+    desc:"You flow with deep intuition and emotional intelligence. Your inner world is vast like an ocean. Your strength is feeling everything deeply; your challenge is not drowning in it.",
+    traits:["Intuitive","Empathic","Mysterious","Adaptive","Wise"],barColor:"#4da6ff",
+    guide:{morning:["Drink a full glass of water the moment you wake up","5 min moon journaling — write dreams and gut instincts","Sit in silence before the world wakes"],
+      movement:["Swimming is your most powerful practice","Slow yoga or Yin yoga — releases emotions from hips","Walk near any water source — river, lake, rain"],
+      food:["Dark foods — black beans, seaweed, blueberries, walnuts","Warm soups and broths — avoid raw cold food","Kidney-support teas — ginger, nettle, black sesame"],
+      blocked:["Fear and anxiety without clear cause","Low motivation, emotional numbness","Lower back or knee discomfort"],
+      excess:["Crying without knowing why","Absorbing others' emotions","Over-isolation or overwhelm"],
+      fix_blocked:["Face one small fear today","Rub your lower back in warm circles","Listen to ambient water sounds for 10 min"],
+      fix_excess:["Walk barefoot on earth to ground yourself","Set one clear emotional boundary today","Spend time with earth-element people"],
+      affirmations:["I flow with life, not against it","My intuition always guides me","I feel deeply and I am not afraid of my depth"]}},
+  earth:{icon:"🌍",name:"Earth",tagline:"The Grounded Force",color:"#7bc67e",
     desc:"You are the anchor for everyone around you — steady, nurturing and enduring. People feel safe in your presence. Your challenge is knowing when to move rather than staying rooted out of comfort.",
-    traits:["Stable","Nurturing","Reliable","Patient","Practical"], barColor:"#7bc67e",
-    guide:{
-      morning:["Eat a warm, nourishing breakfast — earth energy starts with the stomach","5 min gratitude practice — list 3 things grounding you today","Step outside barefoot if possible — feel the earth beneath you"],
-      movement:["Hiking, gardening or nature walks — literal earth connection","Pilates or strength training — slow, intentional muscle work","Cooking as a moving meditation — earth people restore through nourishment"],
-      food:["Root vegetables — sweet potato, carrot, ginger, turmeric","Warm, cooked foods over cold raw — protect your digestive fire","Yellow and orange foods nourish your spleen (earth organ in TCM)"],
+    traits:["Stable","Nurturing","Reliable","Patient","Practical"],barColor:"#7bc67e",
+    guide:{morning:["Eat a warm nourishing breakfast — earth starts with the stomach","5 min gratitude practice — list 3 grounding things","Step outside barefoot — feel the earth beneath you"],
+      movement:["Hiking, gardening or nature walks","Pilates or strength training — slow and intentional","Cooking as a moving meditation"],
+      food:["Root vegetables — sweet potato, carrot, ginger, turmeric","Warm cooked foods over cold raw","Yellow and orange foods nourish your spleen"],
       blocked:["Overthinking and worry in circles","Digestive sluggishness or bloating","Feeling disconnected from purpose"],
-      excess:["Stubbornness, resistance to change","Hoarding or over-attachment","Fatigue from over-giving to others"],
-      fix_blocked:["Take one action — any action — to break the stagnation","Eat a warm meal slowly and mindfully","Spend 20 min in a garden or park"],
-      fix_excess:["Practice saying no to one request today","Let something go — a habit, object or old belief","Move your body to shift stuck energy — even a walk counts"],
-      affirmations:["I am grounded and I am free","I give from fullness, not from fear","Change is safe — I can move and still be rooted"]
-    }
-  },
-  wood:{ icon:"🌲", name:"Wood", tagline:"The Rising Vision", color:"#52d9a4",
-    desc:"You are the visionary, always reaching upward like a tree toward light. Growth and ambition are your nature — you thrive when you have direction, structure and a long-term plan to follow.",
-    traits:["Visionary","Ambitious","Organized","Creative","Strategic"], barColor:"#52d9a4",
-    guide:{
-      morning:["Write your top 3 goals for the day — wood needs direction","Stretch your body — especially your sides and hips (liver meridian)","Look at something green in nature — it activates your element instantly"],
-      movement:["Running, cycling or any forward-moving activity","Yoga flows — especially twisting poses that work the liver","Team sports where you can strategize and lead"],
-      food:["Sour foods — lemon water, apple cider vinegar, fermented foods","Green vegetables — spinach, broccoli, kale nourish your liver","Avoid alcohol — wood types have sensitive livers"],
-      blocked:["Frustration without outlet","Decision paralysis or loss of vision","Eye strain or tight shoulders and neck"],
-      excess:["Rigid, controlling or domineering behavior","Anger that erupts suddenly","Headaches or high blood pressure"],
-      fix_blocked:["Write a 5-year vision — give your wood energy somewhere to grow","Do a side body stretch for 2 min each side","Walk among trees — literally"],
-      fix_excess:["Practice surrender — let one thing be out of your control today","Try yin yoga to soften rigidity","Laugh — humor is the antidote to wood tension"],
-      affirmations:["I grow toward light with patience and purpose","My vision is clear and my path is open","I lead with strength and I bend without breaking"]
-    }
-  },
-  thunder:{ icon:"⚡", name:"Thunder", tagline:"The Electric Strike", color:"#f5c842",
-    desc:"You are electric — fast, unpredictable and brilliantly alive. When you strike, everyone notices. Your challenge is channeling that raw, crackling energy into something that lasts beyond the flash.",
-    traits:["Electric","Bold","Fast-thinking","Inspiring","Unpredictable"], barColor:"#f5c842",
-    guide:{
-      morning:["Cold shower on waking — match the electric shock of your element","Write down every idea that comes — thunder minds generate fast","One clear priority: pick the single most important thing today"],
-      movement:["HIIT, boxing or explosive sports — match your natural energy bursts","Drumming or rhythmic movement — thunder resonates with rhythm","Sprint intervals — short, explosive, then rest"],
-      food:["Magnesium-rich foods — dark chocolate, nuts, seeds, leafy greens","Avoid excess stimulants — caffeine amplifies anxiety in thunder types","Complex carbs for sustained energy between bursts"],
+      excess:["Stubbornness, resistance to change","Hoarding or over-attachment","Fatigue from over-giving"],
+      fix_blocked:["Take one action to break the stagnation","Eat a warm meal slowly and mindfully","Spend 20 min in a garden or park"],
+      fix_excess:["Practice saying no to one request","Let something go — habit, object, or old belief","Move your body to shift stuck energy"],
+      affirmations:["I am grounded and I am free","I give from fullness, not from fear","Change is safe — I can move and still be rooted"]}},
+  wood:{icon:"🌲",name:"Wood",tagline:"The Rising Vision",color:"#52d9a4",
+    desc:"You are the visionary, always reaching upward like a tree toward light. Growth and ambition are your nature — you thrive when you have direction and a long-term plan.",
+    traits:["Visionary","Ambitious","Organized","Creative","Strategic"],barColor:"#52d9a4",
+    guide:{morning:["Write your top 3 goals — wood needs direction","Stretch your sides and hips (liver meridian)","Look at something green in nature"],
+      movement:["Running, cycling or any forward-moving activity","Yoga flows with twisting poses","Team sports where you can strategize and lead"],
+      food:["Sour foods — lemon water, apple cider vinegar, fermented foods","Green vegetables — spinach, broccoli, kale","Avoid alcohol — wood types have sensitive livers"],
+      blocked:["Frustration without outlet","Decision paralysis or loss of vision","Eye strain or tight shoulders"],
+      excess:["Rigid, controlling behavior","Anger that erupts suddenly","Headaches or high blood pressure"],
+      fix_blocked:["Write a 5-year vision — give wood energy direction","Side body stretch 2 min each side","Walk among trees"],
+      fix_excess:["Practice surrender — let one thing be out of control","Try yin yoga to soften rigidity","Laugh — humor is the antidote to wood tension"],
+      affirmations:["I grow toward light with patience","My vision is clear and my path is open","I lead with strength and bend without breaking"]}},
+  thunder:{icon:"⚡",name:"Thunder",tagline:"The Electric Strike",color:"#f5c842",
+    desc:"You are electric — fast, unpredictable and brilliantly alive. When you strike, everyone notices. Your challenge is channeling that raw energy into something that lasts.",
+    traits:["Electric","Bold","Fast-thinking","Inspiring","Unpredictable"],barColor:"#f5c842",
+    guide:{morning:["Cold shower on waking — match your electric element","Write every idea that comes — thunder minds generate fast","One clear priority: pick the single most important thing"],
+      movement:["HIIT, boxing or explosive sports","Drumming or rhythmic movement","Sprint intervals — short, explosive, then rest"],
+      food:["Magnesium-rich foods — dark chocolate, nuts, seeds","Avoid excess caffeine — amplifies anxiety","Complex carbs for sustained energy between bursts"],
       blocked:["Mental fog or sluggishness","No inspiration, flat creativity","Feeling invisible or overlooked"],
-      excess:["Anxiety, scattered thoughts, can't focus","Irritability without obvious cause","Restlessness at night, overactive mind"],
-      fix_blocked:["Do something surprising — a different route, a new food, a bold move","Listen to upbeat music and move for 5 min","Connect with someone who energizes you"],
-      fix_excess:["Ground yourself — sit on earth, hold a stone, walk slowly","Box breathing: 4 in, 4 hold, 4 out, 4 hold","Write all thoughts down to empty the mental static"],
-      affirmations:["I channel my power with precision and purpose","My speed is a gift — I also know when to pause","I strike once and it matters"]
-    }
-  },
-  ice:{ icon:"❄️", name:"Ice", tagline:"The Crystal Mind", color:"#a78fff",
-    desc:"You are crystalline clarity — cool, precise and deeply observant. You see through chaos with calm. Your challenge is thawing enough to let others truly see you and feel the warmth beneath.",
-    traits:["Precise","Calm","Analytical","Perceptive","Reserved"], barColor:"#a78fff",
-    guide:{
-      morning:["5 min of clear intention-setting — ice energy thrives with structure","Warm herbal tea before anything cold — counter your natural coolness","Review your plan for the day — clarity is your superpower"],
-      movement:["Ice skating, swimming in cool water or precision sports","Tai Chi or slow deliberate yoga — matches your controlled nature","Chess, puzzles or strategic games activate your mental energy"],
-      food:["Warming spices — cinnamon, ginger, cardamom to offset the cold","Root vegetables and soups — build inner warmth","Avoid excess cold drinks and raw food — ice types are already cold"],
+      excess:["Anxiety, scattered thoughts","Irritability without obvious cause","Restlessness at night"],
+      fix_blocked:["Do something surprising — a different route, new food","Listen to upbeat music and move for 5 min","Connect with someone who energizes you"],
+      fix_excess:["Ground yourself — sit on earth, hold a stone","Box breathing: 4 in, 4 hold, 4 out, 4 hold","Write all thoughts down to empty mental static"],
+      affirmations:["I channel my power with precision","My speed is a gift — I also know when to pause","I strike once and it matters"]}},
+  ice:{icon:"❄️",name:"Ice",tagline:"The Crystal Mind",color:"#a78fff",
+    desc:"You are crystalline clarity — cool, precise and deeply observant. You see through chaos with calm. Your challenge is thawing enough to let others truly see you.",
+    traits:["Precise","Calm","Analytical","Perceptive","Reserved"],barColor:"#a78fff",
+    guide:{morning:["5 min intention-setting — ice energy thrives with structure","Warm herbal tea before anything cold","Review your plan for the day — clarity is your superpower"],
+      movement:["Precision sports or Tai Chi","Slow deliberate yoga — matches your controlled nature","Chess or strategic games also activate your energy"],
+      food:["Warming spices — cinnamon, ginger, cardamom","Root vegetables and soups — build inner warmth","Avoid excess cold drinks and raw food"],
       blocked:["Emotional numbness or detachment","Decision paralysis from over-analysis","Feeling frozen or unable to act"],
-      excess:["Extreme emotional coldness toward others","Perfectionism that prevents starting","Isolation and cutting people off"],
-      fix_blocked:["Do one imperfect thing — send the message, take the step","Hold a warm drink and breathe slowly","Share one feeling with someone you trust — even one word"],
-      fix_excess:["Deliberately connect — smile at someone, ask how they are","Practice good enough — complete one task without perfecting it","Spend time with fire or water element people — they warm you"],
-      affirmations:["My clarity is power and my warmth is strength","I am precise and I am also open","I thaw where I need to and I stay crystal where I choose"]
-    }
-  },
-  wind:{ icon:"🌬️", name:"Wind", tagline:"The Free Spirit", color:"#c0b8d8",
-    desc:"You are freedom itself — light, ever-changing and full of life. Your imagination knows no limits. Your challenge is finding stillness long enough to let your beautiful ideas take root and grow.",
-    traits:["Free-spirited","Imaginative","Restless","Expressive","Adaptable"], barColor:"#c0b8d8",
-    guide:{
-      morning:["Freewrite for 5 min — let your wind mind pour out freely","Open a window and breathe deeply — you need fresh air to activate","Set one intention to follow through on today — wind needs an anchor"],
-      movement:["Dance freely — no structure, just movement","Cycling outdoors, kite flying, or any open-air activity","Breathwork practices — pranayama, Wim Hof, or simply deep sighs"],
-      food:["Light, varied meals — wind types digest best with variety","Avoid cold, dry food — it makes you more scattered","Warm oats, sweet potatoes and healthy fats ground wind energy"],
+      excess:["Extreme emotional coldness","Perfectionism that prevents starting","Isolation and cutting people off"],
+      fix_blocked:["Do one imperfect thing — send the message, take the step","Hold a warm drink and breathe slowly","Share one feeling with someone you trust"],
+      fix_excess:["Connect deliberately — smile at someone","Practice 'good enough' — complete without perfecting","Spend time with fire or water element people"],
+      affirmations:["My clarity is power and my warmth is strength","I am precise and I am also open","I thaw where I need to"]}},
+  wind:{icon:"🌬️",name:"Wind",tagline:"The Free Spirit",color:"#c0b8d8",
+    desc:"You are freedom itself — light, ever-changing and full of life. Your imagination knows no limits. Your challenge is finding stillness long enough to let your ideas take root.",
+    traits:["Free-spirited","Imaginative","Restless","Expressive","Adaptable"],barColor:"#c0b8d8",
+    guide:{morning:["Freewrite for 5 min — let your wind mind pour out","Open a window and breathe deeply","Set one intention to follow through on — wind needs an anchor"],
+      movement:["Dance freely — no structure, just movement","Cycling outdoors, kite flying, any open-air activity","Breathwork — pranayama or simply deep sighs"],
+      food:["Light, varied meals — wind types digest best with variety","Avoid cold, dry food — it makes you scattered","Warm oats, sweet potatoes and healthy fats ground you"],
       blocked:["Lack of inspiration or feeling trapped","Shallow breathing without noticing","Feeling invisible or not heard"],
       excess:["Starting many things, finishing none","Anxiety, flightiness, inability to rest","Losing things constantly, missing appointments"],
-      fix_blocked:["Go outside immediately — wind activates outside","Play — do something with zero purpose for 10 min","Talk to someone you admire — wind energy sparks through connection"],
-      fix_excess:["Pick one project and commit to just that today","Sit still for 5 min — no phone, no input","Practice a grounding ritual: same time, same place, daily"],
-      affirmations:["I am free and I am also rooted","My ideas take root and they grow","I choose where I land and I stay long enough to bloom"]
-    }
-  }
+      fix_blocked:["Go outside immediately — wind activates outside","Play — do something with zero purpose for 10 min","Talk to someone who inspires you"],
+      fix_excess:["Pick one project and commit to it today","Sit still for 5 min — no phone, no input","Practice a grounding ritual: same time, same place, daily"],
+      affirmations:["I am free and I am also rooted","My ideas take root and they grow","I choose where I land and I stay long enough to bloom"]}}
 };
 
-let current = 0, answers = [], selected = null, currentResult = null;
+// ── State ─────────────────────────────────────────────────────────────────────
+let current=0, answers=[], selected=null, currentElement=null, currentScores=null;
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function showToast(msg, green=false) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.borderColor=green?'#25D366':'var(--border)';
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800);
+}
+function fmtDate(ts) {
+  return new Date(ts).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
 function renderStars() {
-  const wrap = document.getElementById('stars');
-  for (let i = 0; i < 60; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const sz = Math.random() * 2 + 1;
-    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
-    wrap.appendChild(s);
+  const w=document.getElementById('stars');
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div'); s.className='star';
+    const sz=Math.random()*2+1;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+    w.appendChild(s);
   }
 }
 
+// ── Nav ───────────────────────────────────────────────────────────────────────
+function switchNav(tab) {
+  document.querySelectorAll('.nav-tab').forEach((b,i)=>b.classList.toggle('active',
+    (tab==='quiz'&&i===0)||(tab==='saved'&&i===1)||(tab==='setup'&&i===2)));
+  ['quiz','saved','setup'].forEach(id=>{
+    document.getElementById('screen-'+id).classList.toggle('active',id===tab);
+  });
+  if(tab==='saved') renderSaved();
+}
+
+// ── Quiz ──────────────────────────────────────────────────────────────────────
+function showStep(id) {
+  ['step-questions','step-name','step-result'].forEach(s=>
+    document.getElementById(s).classList.toggle('hidden',s!==id));
+}
+
 function renderQuestion() {
-  const q = questions[current];
-  const pct = Math.round((current / questions.length) * 100);
-  document.getElementById('q-counter').textContent = `Question ${current+1} of ${questions.length}`;
-  document.getElementById('q-pct').textContent = pct + '%';
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('q-label').textContent = q.label;
-  document.getElementById('q-text').textContent = q.text;
-  const optsEl = document.getElementById('options');
-  optsEl.innerHTML = '';
-  const letters = ['A','B','C','D'];
-  selected = null;
-  document.getElementById('btn-next').disabled = true;
-  q.options.forEach((o, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'opt';
-    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${o.text}</span>`;
-    btn.onclick = () => {
-      optsEl.querySelectorAll('.opt').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      selected = i;
-      document.getElementById('btn-next').disabled = false;
+  const q=questions[current];
+  const pct=Math.round((current/questions.length)*100);
+  document.getElementById('q-counter').textContent=`Question ${current+1} of ${questions.length}`;
+  document.getElementById('q-pct').textContent=pct+'%';
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('q-label').textContent=q.label;
+  document.getElementById('q-text').textContent=q.text;
+  const optsEl=document.getElementById('options');
+  optsEl.innerHTML=''; selected=null;
+  document.getElementById('btn-next').disabled=true;
+  const letters=['A','B','C','D'];
+  q.options.forEach((o,i)=>{
+    const btn=document.createElement('button'); btn.className='opt';
+    btn.innerHTML=`<span class="opt-letter">${letters[i]}</span><span>${o.text}</span>`;
+    btn.onclick=()=>{
+      optsEl.querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected'); selected=i;
+      document.getElementById('btn-next').disabled=false;
     };
     optsEl.appendChild(btn);
   });
 }
 
-function buildGuide(el, color) {
-  const g = el.guide;
-  const tabs = [
-    { id:'morning', label:'☀️ Morning', title:'Morning Activation Ritual', items: g.morning },
-    { id:'movement', label:'🏃 Movement', title:'Movement Practices', items: g.movement },
-    { id:'food', label:'🌿 Food', title:'Nourishing Foods', items: g.food },
-    { id:'balance', label:'⚖️ Balance', special:'balance' },
-    { id:'affirm', label:'✦ Affirmations', special:'affirm' },
+document.getElementById('btn-next').onclick=()=>{
+  if(selected===null) return;
+  answers[current]=questions[current].options[selected].e;
+  current++;
+  if(current>=questions.length){
+    const scores={fire:0,water:0,earth:0,wood:0,thunder:0,ice:0,wind:0};
+    answers.forEach(a=>Object.entries(a).forEach(([k,v])=>{scores[k]+=v;}));
+    currentScores=scores;
+    const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+    currentElement=elements[sorted[0][0]];
+    showStep('step-name');
+    document.getElementById('name-input').focus();
+  } else renderQuestion();
+};
+
+// ── Submit to Google Sheet ────────────────────────────────────────────────────
+async function submitToSheet(payload) {
+  const url=getSheetUrl();
+  if(!url) return {ok:false,reason:'no_url'};
+  try {
+    await fetch(url, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(payload)
+    });
+    return {ok:true};
+  } catch(e) { return {ok:false,reason:e.message}; }
+}
+
+document.getElementById('btn-save-result').onclick=async()=>{
+  const name=document.getElementById('name-input').value.trim()||'Anonymous';
+  const phone=document.getElementById('phone-input').value.trim()||'';
+  const sorted=Object.entries(currentScores).sort((a,b)=>b[1]-a[1]);
+  const statusEl=document.getElementById('submit-status');
+
+  // Save locally
+  const entry={name,phone,element:sorted[0][0],secondary:[sorted[1][0],sorted[2][0]],scores:currentScores,ts:Date.now()};
+  const arr=loadLocal(); arr.unshift(entry); saveLocal(arr);
+
+  // Submit to sheet
+  const sheetUrl=getSheetUrl();
+  if(sheetUrl){
+    statusEl.textContent='⏳ Saving to Google Sheet...';
+    statusEl.className='sheet-status';
+    const payload={
+      name, phone,
+      element: elements[sorted[0][0]].icon+' '+elements[sorted[0][0]].name,
+      secondary1: elements[sorted[1][0]].icon+' '+elements[sorted[1][0]].name,
+      secondary2: elements[sorted[2][0]].icon+' '+elements[sorted[2][0]].name,
+      scores: currentScores,
+      url: window.location.href
+    };
+    const res=await submitToSheet(payload);
+    if(res.ok){
+      statusEl.textContent='✅ Saved to Google Sheet!';
+      statusEl.className='sheet-status ok';
+    } else {
+      statusEl.textContent='⚠️ Sheet not connected — saved locally only';
+      statusEl.className='sheet-status err';
+    }
+  }
+
+  setTimeout(()=>showResult(name), 600);
+};
+
+// ── Build Guide ───────────────────────────────────────────────────────────────
+function buildGuide(el) {
+  const g=el.guide;
+  const tabs=[
+    {id:'morning',label:'☀️ Morning',title:'Morning Activation Ritual',items:g.morning},
+    {id:'movement',label:'🏃 Movement',title:'Movement Practices',items:g.movement},
+    {id:'food',label:'🌿 Food',title:'Nourishing Foods',items:g.food},
+    {id:'balance',label:'⚖️ Balance',special:'balance'},
+    {id:'affirm',label:'✦ Affirmations',special:'affirm'},
   ];
-  const tabsEl = document.getElementById('guide-tabs');
-  const panelsEl = document.getElementById('guide-panels');
-  tabsEl.innerHTML = ''; panelsEl.innerHTML = '';
-  tabs.forEach((t, idx) => {
-    const btn = document.createElement('button');
-    btn.className = 'tab-btn' + (idx === 0 ? ' active' : '');
-    btn.textContent = t.label;
-    if (idx === 0) btn.style.background = color;
-    btn.onclick = () => {
-      tabsEl.querySelectorAll('.tab-btn').forEach(b => { b.classList.remove('active'); b.style.background = ''; });
-      btn.classList.add('active'); btn.style.background = color;
-      panelsEl.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      document.getElementById('panel-' + t.id).classList.add('active');
+  const tabsEl=document.getElementById('guide-tabs');
+  const panelsEl=document.getElementById('guide-panels');
+  tabsEl.innerHTML=''; panelsEl.innerHTML='';
+  tabs.forEach((t,idx)=>{
+    const btn=document.createElement('button');
+    btn.className='tab-btn'+(idx===0?' active':''); btn.textContent=t.label;
+    if(idx===0) btn.style.background=el.color;
+    btn.onclick=()=>{
+      tabsEl.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');b.style.background='';});
+      btn.classList.add('active'); btn.style.background=el.color;
+      panelsEl.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      document.getElementById('panel-'+t.id).classList.add('active');
     };
     tabsEl.appendChild(btn);
-    const panel = document.createElement('div');
-    panel.className = 'tab-panel' + (idx === 0 ? ' active' : '');
-    panel.id = 'panel-' + t.id;
-    if (t.special === 'balance') {
-      panel.innerHTML = `<div class="balance-grid">
-        <div class="balance-box">
-          <div class="balance-box-title" style="color:#ff6b35">⬇️ When Blocked</div>
+    const panel=document.createElement('div');
+    panel.className='tab-panel'+(idx===0?' active':''); panel.id='panel-'+t.id;
+    if(t.special==='balance'){
+      panel.innerHTML=`<div class="balance-grid">
+        <div class="balance-box"><div class="balance-box-title" style="color:#ff6b35">⬇️ When Blocked</div>
           <ul class="guide-list">${g.blocked.map(i=>`<li>${i}</li>`).join('')}</ul>
           <div style="margin-top:10px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">How to fix</div>
-          <ul class="guide-list">${g.fix_blocked.map(i=>`<li>${i}</li>`).join('')}</ul>
-        </div>
-        <div class="balance-box">
-          <div class="balance-box-title" style="color:#4da6ff">⬆️ When Excess</div>
+          <ul class="guide-list">${g.fix_blocked.map(i=>`<li>${i}</li>`).join('')}</ul></div>
+        <div class="balance-box"><div class="balance-box-title" style="color:#4da6ff">⬆️ When Excess</div>
           <ul class="guide-list">${g.excess.map(i=>`<li>${i}</li>`).join('')}</ul>
           <div style="margin-top:10px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px">How to fix</div>
-          <ul class="guide-list">${g.fix_excess.map(i=>`<li>${i}</li>`).join('')}</ul>
-        </div></div>`;
-    } else if (t.special === 'affirm') {
-      panel.innerHTML = `<div class="guide-card"><ul class="affirmation-list">${g.affirmations.map(a=>`<li>${a}"</li>`).join('')}</ul></div>`;
+          <ul class="guide-list">${g.fix_excess.map(i=>`<li>${i}</li>`).join('')}</ul></div>
+      </div>`;
+    } else if(t.special==='affirm'){
+      panel.innerHTML=`<div class="guide-card"><ul class="affirmation-list">${g.affirmations.map(a=>`<li>${a}"</li>`).join('')}</ul></div>`;
     } else {
-      panel.innerHTML = `<div class="guide-card"><div class="guide-card-title" style="color:${color}">${t.title}</div><ul class="guide-list">${t.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+      panel.innerHTML=`<div class="guide-card"><div class="guide-card-title" style="color:${el.color}">${t.title}</div><ul class="guide-list">${t.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
     }
     panelsEl.appendChild(panel);
   });
 }
 
-function buildShareCard(el, sorted, maxScore) {
-  document.getElementById('sc-icon').textContent = el.icon;
-  document.getElementById('sc-name').style.color = el.color;
-  document.getElementById('sc-name').textContent = el.name;
-  document.getElementById('sc-tagline').textContent = el.tagline;
-  document.getElementById('sc-desc').textContent = el.desc;
-  document.getElementById('sc-traits').innerHTML = el.traits.map(t =>
-    `<span class="sc-trait" style="border-color:${el.color}44;color:${el.color}">${t}</span>`
-  ).join('');
-  document.getElementById('sc-affirmation').style.color = el.color;
-  document.getElementById('sc-affirmation').textContent = '"' + el.guide.affirmations[0] + '"';
-  document.getElementById('sc-bars').innerHTML = sorted.slice(0,5).map(([k,v]) => {
-    const e = elements[k];
-    const pct = Math.round((v/maxScore)*100);
-    return `<div class="sc-bar-row">
-      <div class="sc-bar-lbl">${e.icon} ${e.name}</div>
-      <div class="sc-bar-track"><div class="sc-bar-fill" style="width:${pct}%;background:${e.barColor}"></div></div>
-      <div class="sc-bar-val">${v}</div>
-    </div>`;
-  }).join('');
-}
-
-function showResult() {
-  const scores = { fire:0, water:0, earth:0, wood:0, thunder:0, ice:0, wind:0 };
-  answers.forEach(a => Object.entries(a).forEach(([k,v]) => { scores[k] += v; }));
-  const sorted = Object.entries(scores).sort((a,b) => b[1]-a[1]);
-  const primary = sorted[0][0];
-  const el = elements[primary];
-  const maxScore = sorted[0][1] || 1;
-  currentResult = { el, sorted, maxScore };
-
-  document.getElementById('quiz-screen').classList.add('hidden');
-  const rs = document.getElementById('result-screen');
-  rs.classList.remove('hidden'); rs.style.display = 'block';
-  document.getElementById('prog-fill').style.width = '100%';
-  document.getElementById('q-counter').textContent = 'Complete!';
-  document.getElementById('q-pct').textContent = '100%';
-
-  document.getElementById('res-icon').textContent = el.icon;
-  document.getElementById('res-name').textContent = el.name;
-  document.getElementById('res-name').style.color = el.color;
-  document.getElementById('res-tagline').textContent = el.tagline;
-  document.getElementById('res-desc').textContent = el.desc;
-  document.getElementById('res-traits').innerHTML = el.traits.map(t =>
-    `<span class="trait" style="border-color:${el.color}33;color:${el.color}">${t}</span>`
-  ).join('');
-  document.getElementById('res-secondary').innerHTML = sorted.slice(1,3).map(([k]) =>
-    `<span class="sec-badge">${elements[k].icon} ${elements[k].name}</span>`
-  ).join('');
-  document.getElementById('res-bars').innerHTML = sorted.slice(0,6).map(([k,v]) => {
-    const e = elements[k];
-    const pct = Math.round((v/maxScore)*100);
+// ── Show Result ───────────────────────────────────────────────────────────────
+function showResult(name) {
+  const el=currentElement;
+  const sorted=Object.entries(currentScores).sort((a,b)=>b[1]-a[1]);
+  const maxScore=sorted[0][1]||1;
+  showStep('step-result');
+  document.getElementById('prog-fill').style.width='100%';
+  document.getElementById('q-counter').textContent='Complete!';
+  document.getElementById('q-pct').textContent='100%';
+  document.getElementById('res-icon').textContent=el.icon;
+  document.getElementById('res-name').textContent=el.name;
+  document.getElementById('res-name').style.color=el.color;
+  document.getElementById('res-tagline').textContent=el.tagline;
+  document.getElementById('res-desc').textContent=el.desc;
+  document.getElementById('res-traits').innerHTML=el.traits.map(t=>
+    `<span class="trait" style="border-color:${el.color}33;color:${el.color}">${t}</span>`).join('');
+  document.getElementById('res-secondary').innerHTML=sorted.slice(1,3).map(([k])=>
+    `<span class="sec-badge">${elements[k].icon} ${elements[k].name}</span>`).join('');
+  document.getElementById('res-bars').innerHTML=sorted.slice(0,6).map(([k,v])=>{
+    const e=elements[k]; const pct=Math.round((v/maxScore)*100);
     return `<div class="bar-row"><div class="bar-lbl">${e.icon} ${e.name}</div><div class="bar-track"><div class="bar-fill" style="width:0%;background:${e.barColor}" data-w="${pct}"></div></div><div class="bar-val">${v}</div></div>`;
   }).join('');
-  setTimeout(() => { document.querySelectorAll('.bar-fill').forEach(b => { b.style.width = b.dataset.w + '%'; }); }, 100);
-  buildGuide(el, el.color);
-  buildShareCard(el, sorted, maxScore);
+  setTimeout(()=>{document.querySelectorAll('.bar-fill').forEach(b=>{b.style.width=b.dataset.w+'%';});},100);
+  buildGuide(el);
 }
 
-function showPopup(msg) {
-  const p = document.getElementById('copy-popup');
-  p.textContent = msg || '✓ Copied to clipboard!';
-  p.classList.add('show');
-  setTimeout(() => p.classList.remove('show'), 2500);
+function resetQuiz() {
+  current=0; answers=[]; selected=null; currentElement=null; currentScores=null;
+  document.getElementById('name-input').value='';
+  document.getElementById('phone-input').value='';
+  document.getElementById('submit-status').textContent='';
+  showStep('step-questions'); renderQuestion();
 }
 
-function copyToClipboard(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(() => showPopup()).catch(() => fallbackCopy(text));
-  } else { fallbackCopy(text); }
+// ── Share ─────────────────────────────────────────────────────────────────────
+function copyText() {
+  if(!currentElement) return;
+  const el=currentElement;
+  const name=document.getElementById('name-input').value.trim()||'Anonymous';
+  navigator.clipboard.writeText(
+    `✦ ${name}'s Elemental Body Type ✦\n\n${el.icon} ${el.name} — ${el.tagline}\n\n${el.desc}\n\nTraits: ${el.traits.join(' · ')}\n\nAffirmation: "${el.guide.affirmations[0]}"\n\nDiscover yours 👉 https://digimarketer.github.io/elemental-quiz`
+  ).then(()=>showToast('📋 Copied! Paste into WhatsApp.',true)).catch(()=>showToast('❌ Copy failed'));
+}
+function shareWhatsApp() {
+  if(!currentElement) return;
+  const el=currentElement;
+  const name=document.getElementById('name-input').value.trim()||'Anonymous';
+  window.open(`https://wa.me/?text=${encodeURIComponent(`${el.icon} *${name}'s Element: ${el.name}*\n_${el.tagline}_\n\n${el.desc}\n\nTraits: ${el.traits.join(' · ')}\n\n"${el.guide.affirmations[0]}"\n\n✦ Find your element 👉 https://digimarketer.github.io/elemental-quiz`)}`,'_blank');
 }
 
-function fallbackCopy(text) {
-  const ta = document.createElement('textarea');
-  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-  document.body.appendChild(ta); ta.select();
-  try { document.execCommand('copy'); showPopup(); } catch(e) { showPopup('Could not copy — try manually'); }
-  document.body.removeChild(ta);
-}
-
-document.getElementById('btn-copy-wa').onclick = () => {
-  if (!currentResult) return;
-  const { el, sorted } = currentResult;
-  const sec = sorted.slice(1,3).map(([k]) => elements[k].icon + ' ' + elements[k].name).join(' & ');
-  const text =
-`🌌 *My Elemental Body Type Result*
-
-${el.icon} *Primary Element: ${el.name}*
-_"${el.tagline}"_
-
-${el.desc}
-
-✨ *My Traits:* ${el.traits.join(' · ')}
-🌀 *Secondary:* ${sec}
-
-💬 *My Affirmation:*
-_"${el.guide.affirmations[0]}"_
-
-☀️ *Today's Activation:*
-· ${el.guide.morning[0]}
-· ${el.guide.morning[1]}
-
-🌿 *Best Foods for Me:*
-· ${el.guide.food[0]}
-· ${el.guide.food[1]}
-
-✦ Discover YOUR element → [paste your quiz link here]`;
-  copyToClipboard(text);
-};
-
-document.getElementById('btn-copy-text').onclick = () => {
-  if (!currentResult) return;
-  const { el, sorted } = currentResult;
-  const sec = sorted.slice(1,3).map(([k]) => elements[k].name).join(' & ');
-  const text =
-`ELEMENTAL BODY TYPE RESULT
-===========================
-Element: ${el.icon} ${el.name} — ${el.tagline}
-
-${el.desc}
-
-TRAITS: ${el.traits.join(', ')}
-SECONDARY: ${sec}
-
-MORNING RITUAL:
-${el.guide.morning.map(i => '• ' + i).join('\n')}
-
-MOVEMENT:
-${el.guide.movement.map(i => '• ' + i).join('\n')}
-
-FOODS:
-${el.guide.food.map(i => '• ' + i).join('\n')}
-
-SIGNS OF BLOCKED ENERGY:
-${el.guide.blocked.map(i => '• ' + i).join('\n')}
-
-HOW TO FIX (blocked):
-${el.guide.fix_blocked.map(i => '• ' + i).join('\n')}
-
-AFFIRMATIONS:
-${el.guide.affirmations.map(i => '"' + i + '"').join('\n')}`;
-  copyToClipboard(text);
-};
-
-document.getElementById('btn-save-img').onclick = () => {
-  if (!currentResult || typeof html2canvas === 'undefined') {
-    showPopup('⏳ Loading image library...');
-    setTimeout(() => document.getElementById('btn-save-img').click(), 1200);
+// ── Saved Results ─────────────────────────────────────────────────────────────
+function renderSaved() {
+  const results=loadLocal();
+  const listEl=document.getElementById('saved-list');
+  const statsEl=document.getElementById('stats-row');
+  if(results.length===0){
+    statsEl.classList.add('hidden');
+    listEl.innerHTML=`<div class="saved-empty"><div class="saved-empty-icon">🌌</div><div>No results saved yet on this device.</div><div style="font-size:12px;margin-top:.5rem">All results from this device will appear here. Connect Google Sheets to see everyone's results!</div></div>`;
     return;
   }
-  const card = document.getElementById('share-card');
-  card.style.top = '-9999px'; card.style.left = '0';
-  html2canvas(card, { backgroundColor: '#0e0c1a', scale: 2, useCORS: true, logging: false }).then(canvas => {
-    card.style.top = '-9999px'; card.style.left = '-9999px';
-    const link = document.createElement('a');
-    link.download = 'my-element-' + currentResult.el.name.toLowerCase() + '.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-    showPopup('✓ Image saved!');
-  }).catch(() => { showPopup('Could not save image'); });
-};
-
-document.getElementById('btn-save-pdf').onclick = () => {
-  showPopup('✓ Opening print dialog...');
-  setTimeout(() => window.print(), 400);
-};
-
-document.getElementById('btn-next').onclick = () => {
-  if (selected === null) return;
-  answers[current] = questions[current].options[selected].e;
-  current++;
-  if (current >= questions.length) showResult();
-  else renderQuestion();
-};
-
-function reset() {
-  current = 0; answers = []; selected = null; currentResult = null;
-  document.getElementById('result-screen').classList.add('hidden');
-  document.getElementById('quiz-screen').classList.remove('hidden');
-  renderQuestion();
+  statsEl.classList.remove('hidden');
+  const counts={};
+  results.forEach(r=>{counts[r.element]=(counts[r.element]||0)+1;});
+  const topEl=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];
+  statsEl.innerHTML=`
+    <div class="stat-box"><div class="stat-num" style="color:var(--accent)">${results.length}</div><div class="stat-lbl">Total</div></div>
+    <div class="stat-box"><div class="stat-num">${elements[topEl[0]].icon}</div><div class="stat-lbl">Most Common</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--accent)">${Object.keys(counts).length}</div><div class="stat-lbl">Elements</div></div>`;
+  listEl.innerHTML=results.map(r=>{
+    const el=elements[r.element]; const sec=r.secondary.map(s=>elements[s]);
+    return `<div class="saved-entry">
+      <div class="saved-entry-icon">${el.icon}</div>
+      <div class="saved-entry-info">
+        <div class="saved-entry-name">${r.name}${r.phone?' · 📱'+r.phone:''}</div>
+        <div class="saved-entry-element" style="color:${el.color}">${el.name} — ${el.tagline}</div>
+        <div class="saved-entry-date">${fmtDate(r.ts)} · Also: ${sec.map(s=>s.icon+' '+s.name).join(', ')}</div>
+        <div class="saved-entry-traits">${el.traits.map(t=>`<span class="saved-entry-trait" style="color:${el.color};border-color:${el.color}44">${t}</span>`).join('')}</div>
+      </div></div>`;
+  }).join('')+`<button class="saved-clear-btn" onclick="clearResults()">🗑 Clear All Local Results</button>`;
 }
-document.getElementById('btn-retake').onclick = reset;
-document.getElementById('btn-new').onclick = reset;
 
+function clearResults() {
+  if(confirm('Clear all locally saved results?')){
+    localStorage.removeItem(LS_KEY);
+    showToast('🗑 Cleared'); renderSaved();
+  }
+}
+
+// ── Setup ─────────────────────────────────────────────────────────────────────
+function saveSheetUrl() {
+  const url=document.getElementById('sheet-url-input').value.trim();
+  const statusEl=document.getElementById('sheet-status-msg');
+  if(!url){ statusEl.textContent='⚠️ Please paste a valid URL'; statusEl.className='sheet-status err'; return; }
+  if(!url.startsWith('https://')){ statusEl.textContent='⚠️ URL must start with https://'; statusEl.className='sheet-status err'; return; }
+  setSheetUrl(url);
+  statusEl.textContent='✅ Google Sheet connected! Results will now save automatically.';
+  statusEl.className='sheet-status ok';
+  showToast('✅ Google Sheet connected!', true);
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
 renderStars();
 renderQuestion();
 </script>
